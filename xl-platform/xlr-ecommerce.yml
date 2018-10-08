@@ -1,16 +1,4 @@
 apiVersion: xl-release/v1beta1
-kind: Configurations
-spec:
-- name: XL Deploy
-  type: xldeploy.XLDeployServer
-  url: http://deepus-dell:4516
-  ### to be changed to secrets,plain text for now
-  username: admin
-  password: admin12
-
----
-
-apiVersion: xl-release/v1beta1
 kind: Templates
 spec:
 - name: E-COMMERCE
@@ -37,9 +25,6 @@ spec:
       color: '#ff9e3b'
       type: xlrelease.Phase
       tasks:
-      - name: Ready to go?
-        type: xlrelease.GateTask
-        team: Release Admin
       # Provision Infra
       - name: Provision Fargate cluster, RDS DB and Network resources
         type: xldeploy.Deploy
