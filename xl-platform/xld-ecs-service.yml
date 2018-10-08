@@ -7,7 +7,7 @@ spec:
     - name: ecommerce-app-service
       type: udm.Application
       children:
-      - name: 'v1.0'
+      - name: '1.0'
         type: udm.DeploymentPackage
         deployables:
         - name: ecommerce-store-app

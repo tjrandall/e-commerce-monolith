@@ -130,4 +130,3 @@ spec:
           type: template.udm.Dictionary
           entries:
             ALB_DNS_NAME: '{{%dnsName%}}'
-
