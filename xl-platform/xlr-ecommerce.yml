@@ -62,7 +62,7 @@ spec:
 
             data = json.loads('${ALB_DICTIONARY_CI}')
             releaseVariables['ALB_DNS_NAME'] = data['entries']['ALB_DNS_NAME']
-
+          # end of script
       - name: "Check e-commerce application health"
         type: "xlrelease.ScriptTask"
         script: |
@@ -82,6 +82,7 @@ spec:
           else:
               print 'Application is not in good health'
               exit(1)
+        # end of script
       - name: Verify application
         type: xlrelease.GateTask
         team: Release Admin
