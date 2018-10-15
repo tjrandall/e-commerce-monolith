@@ -1,0 +1,54 @@
+apiVersion: xl-deploy/v1beta1
+kind: Applications
+spec:
+- name: ecommerce-monolith
+  type: core.Directory
+  children:
+    - name: ecommerce-app-service
+      type: udm.Application
+      children:
+      - name: 'v1.0'
+        type: udm.DeploymentPackage
+        deployables:
+        - name: ecommerce-store-app
+          type: aws.ecs.ServiceSpec
+          serviceName: ecommerce-store-app
+          desiredCount: 1
+          launchType: FARGATE
+          networkMode: awsvpc
+          assignPublicIp: true
+          executionRole: 'arn:aws:iam::932770550094:role/ecsTaskExecutionRole'
+          cpu: 2048
+          memory: 4096
+          subnets:
+          - 'Name:ecommerce-monolith-subnet-a'
+          - 'Name:ecommerce-monolith-subnet-b'
+          securityGroups:
+          - 'Name:ecommerce-monolith-internal-securitygroup'
+          loadBalancers:
+          - name: ecommerce-monolith-app-alb
+            type: aws.ecs.LoadBalancerSpec
+            targetGroupArn: 'Name:ecommerce-monolith-targetgroup'
+            containerName: ecommerce-monolith-app
+            containerPort: 8080
+          containerDefinitions:
+          - name: ecommerce-monolith-app
+            containerName: ecommerce-monolith-app
+            type: aws.ecs.ContainerDefinitionSpec
+            image: xebialabsunsupported/ecommerce-monolith
+            cpu: 1024
+            softMemoryLimit: 768
+            portMappings:
+            - name: port-mapping-8080
+              type: aws.ecs.PortSpec
+              containerPort: 8080
+            logConfiguration:
+            - name: cloudwatch-log-registry
+              type: aws.ecs.LogConfigurationSpec
+              logDriver: awslogs
+              options:
+                awslogs-group: "vpartington-ecs-1-ecommerceMonolithLogGroup-RAM6KMZ9Q823"
+                awslogs-region: "{{region}}"
+                awslogs-stream-prefix: "ecs-ecommerce"
+            environment:
+              SPRING_PROFILES_ACTIVE: dev,swagger
