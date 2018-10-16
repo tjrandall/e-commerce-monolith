@@ -17,7 +17,7 @@ spec:
           launchType: FARGATE
           networkMode: awsvpc
           assignPublicIp: true
-          executionRole: 'arn:aws:iam::932770550094:role/ecsTaskExecutionRole'
+          executionRole: '{{ECS_EXECUTION_ROLE}}'
           cpu: 2048
           memory: 4096
           subnets:
@@ -47,8 +47,31 @@ spec:
               type: aws.ecs.LogConfigurationSpec
               logDriver: awslogs
               options:
-                awslogs-group: "vpartington-ecs-1-ecommerceMonolithLogGroup-RAM6KMZ9Q823"
+                awslogs-group: "/ecommerce-monolith"
                 awslogs-region: "{{region}}"
                 awslogs-stream-prefix: "ecs-ecommerce"
             environment:
               SPRING_PROFILES_ACTIVE: dev,swagger
+---
+apiVersion: xl-deploy/v1beta1
+kind: Infrastructure
+spec:
+- name: Infrastructure/aws/ecommerceMonolithCluster
+  type: aws.ecs.Cluster
+  region: unknown
+  clusterName: unknown
+  clusterArn: unknown
+---
+apiVersion: xl-deploy/v1beta1
+kind: Environments
+spec:
+- name: Environments/ECS
+  type: udm.Environment
+  members:
+  - ~Infrastructure/aws/ecommerceMonolithCluster
+  dictionaries:
+  - ~Environments/ECS Dictionary
+- name: Environments/ECS Dictionary
+  type: udm.Dictionary
+  entries:
+    ECS_EXECUTION_ROLE: unknown

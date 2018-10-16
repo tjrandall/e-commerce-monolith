@@ -1,4 +1,9 @@
 AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  ResourceNamePrefix:
+    Type: String
+    Default: ecommerce-monolith
+
 Resources:
   # VPC
   ecommerceMonolithVPC:
@@ -161,6 +166,7 @@ Resources:
   ecommerceMonolithLogGroup:
     Type: 'AWS::Logs::LogGroup'
     Properties:
+      LogGroupName: "/ecommerce-monolith"
       RetentionInDays: 7
 
   # Load balancer
@@ -196,8 +202,19 @@ Resources:
   # ECS
   ecommerceMonolithCluster:
     Type: 'AWS::ECS::Cluster'
+    Properties:
+      ClusterName: !Sub "${ResourceNamePrefix}-ecs-cluster"
 
 Outputs:
-  LoadBalancerOutput:
+  ECSExecutionRoleArn:
+    Description: ARN of the ECS execution role to use
+    Value: !GetAtt ecommerceMonolithRunRole.Arn
+  ECSClusterName:
+    Description: Name of the ECS Cluster'
+    Value: !Sub "${ResourceNamePrefix}-ecs-cluster"
+  ECSClusterArn:
+    Description: Name of the ECS Cluster'
+    Value: !GetAtt ecommerceMonolithCluster.Arn
+  LoadBalancerDNSName:
     Description: The external DNS address of the load-balanancer
     Value: !GetAtt ecommerceMonolithLoadBalancer.DNSName
