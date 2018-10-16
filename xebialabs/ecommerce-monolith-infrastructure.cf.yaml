@@ -31,6 +31,7 @@ Resources:
   ecommerceMonolithSubnetA:
     Type: AWS::EC2::Subnet
     Properties:
+      MapPublicIpOnLaunch: true
       VpcId: !Ref ecommerceMonolithVPC
       CidrBlock: 10.0.0.0/24
       AvailabilityZone:
@@ -64,6 +65,7 @@ Resources:
   ecommerceMonolithSubnetB:
     Type: AWS::EC2::Subnet
     Properties:
+      MapPublicIpOnLaunch: true
       VpcId: !Ref ecommerceMonolithVPC
       CidrBlock: 10.0.1.0/24
       AvailabilityZone:
