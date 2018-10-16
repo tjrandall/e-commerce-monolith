@@ -32,7 +32,7 @@ spec:
       color: '#ff9e3b'
       type: xlrelease.Phase
       tasks:
-      - name: Provision ecommerece product in service catalog
+      - name: Provision ecommerce product in service catalog
         type: xldeploy.Deploy
         server: XL Deploy
         deploymentPackage: ecommerce-monolith/ecommerce-sc/2.0
