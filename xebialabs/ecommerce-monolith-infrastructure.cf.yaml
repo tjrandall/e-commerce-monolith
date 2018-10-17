@@ -15,13 +15,13 @@ Resources:
       InstanceTenancy: default
       Tags:
       - Key: Name
-        Value: ecommerce-monolith-vpc
+        Value: !Sub "${ResourceNamePrefix}-vpc"
   ecommerceMonolithInternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
       - Key: Name
-        Value: ecommerce-monolith-igw
+        Value: !Sub "${ResourceNamePrefix}-igw"
   ecommerceMonolithAttachGateway:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
@@ -40,14 +40,14 @@ Resources:
         - !GetAZs
       Tags:
       - Key: Name
-        Value: ecommerce-monolith-subnet-a
+        Value: !Sub "${ResourceNamePrefix}-subnet-a"
   ecommerceMonolithSubnetARouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref ecommerceMonolithVPC
       Tags:
       - Key: Name
-        Value: ecommerce-monolith-routetable-a
+        Value: !Sub "${ResourceNamePrefix}-routetable-a"
       - Key: Network
         Value: Private
   ecommerceMonolithSubnetARoute:
@@ -74,14 +74,14 @@ Resources:
         - !GetAZs
       Tags:
       - Key: Name
-        Value: ecommerce-monolith-subnet-b
+        Value: !Sub "${ResourceNamePrefix}-subnet-b"
   ecommerceMonolithSubnetBRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref ecommerceMonolithVPC
       Tags:
       - Key: Name
-        Value: ecommerce-monolith-routetable-b
+        Value: !Sub "${ResourceNamePrefix}-routetable-b"
       - Key: Network
         Value: Private
   ecommerceMonolithSubnetBRoute:
@@ -146,7 +146,7 @@ Resources:
       VpcId: !Ref ecommerceMonolithVPC
       Tags:
       - Key: Name
-        Value: ecommerce-monolith-internal-securitygroup
+        Value: !Sub "${ResourceNamePrefix}-internal-securitygroup"
   ecommerceMonolithInternetSG:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -164,17 +164,18 @@ Resources:
         DestinationSecurityGroupId: !Ref ecommerceMonolithInternalSG
       Tags:
       - Key: Name
-        Value: ecommerce-monolith-internet-securitygroup
+        Value: !Sub "${ResourceNamePrefix}-internet-securitygroup"
   ecommerceMonolithLogGroup:
     Type: 'AWS::Logs::LogGroup'
     Properties:
-      LogGroupName: "/ecommerce-monolith"
+      LogGroupName: !Sub "/${ResourceNamePrefix}/ecommerce-monolith"
       RetentionInDays: 7
 
   # Load balancer
   ecommerceMonolithLoadBalancer:
     Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
     Properties:
+      Name: !Sub "${ResourceNamePrefix}-loadbalancer"
       Scheme: internet-facing
       Type: application
       Subnets:
@@ -185,7 +186,7 @@ Resources:
   ecommerceMonolithALBTargetGroup:
     Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
     Properties:
-      Name: ecommerce-monolith-targetgroup
+      Name: !Sub "${ResourceNamePrefix}-targetgroup"
       Port: 80
       Protocol: HTTP
       TargetType: ip
