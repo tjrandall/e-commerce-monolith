@@ -4,10 +4,23 @@ spec:
 - name: ecommerce-monolith
   type: core.Directory
   children:
+    - name: ecommerce-sc
+      type: udm.Application
+      children:
+      - name: "1.0"
+        type: "udm.DeploymentPackage"
+        deployables:
+        - name: "ecommerce-infra"
+          type: "aws.servicecatalog.ProvisionedProductSpec"
+          productId: "prod-o32dqkwmyw2as"
+          provisionedProductName: "ecommerce-infra"
+          productVersion: "1.0"
+          provisioningParameters:
+            ResourceNamePrefix: "ecommerce-monolith"
     - name: ecommerce-app-service
       type: udm.Application
       children:
-      - name: 'v1.0'
+      - name: '1.0'
         type: udm.DeploymentPackage
         deployables:
         - name: ecommerce-store-app
@@ -56,22 +69,41 @@ spec:
 apiVersion: xl-deploy/v1beta1
 kind: Infrastructure
 spec:
-- name: Infrastructure/aws/ecommerceMonolithCluster
-  type: aws.ecs.Cluster
-  region: unknown
-  clusterName: unknown
-  clusterArn: unknown
+- name: Infrastructure/AWS
+  type: aws.Cloud
+  accesskey: unknown
+  accessSecret: unknown
+  children:
+  - name: Infrastructure/AWS/ecommerceMonolithCluster
+    type: aws.ecs.Cluster
+    region: unknown
+    clusterName: unknown
+    clusterArn: unknown
+  - name: "Service-Catalog-EU-WEST-1"
+    type: "aws.servicecatalog.Catalog"
+    region: "eu-west-1"
+    children: []
 ---
 apiVersion: xl-deploy/v1beta1
 kind: Environments
 spec:
-- name: Environments/ECS
-  type: udm.Environment
-  members:
-  - ~Infrastructure/aws/ecommerceMonolithCluster
-  dictionaries:
-  - ~Environments/ECS Dictionary
-- name: Environments/ECS Dictionary
-  type: udm.Dictionary
-  entries:
-    ECS_EXECUTION_ROLE: unknown
+- name: Environments/AWS-ECOMMERCE
+  type: core.Directory
+  children:
+   - name: Environments/AWS-ECOMMERCE/ECS Dictionary
+     type: udm.Dictionary
+     entries:
+       region: "eu-west-1"
+       ECS_EXECUTION_ROLE: unknown
+   - name: Environments/AWS-ECOMMERCE/ECS
+     type: udm.Environment
+     members:
+     - ~Infrastructure/AWS/ecommerceMonolithCluster
+     dictionaries:
+     - ~Environments/AWS-ECOMMERCE/ECS Dictionary
+   - name: "Environments/AWS-ECOMMERCE/AWS-Service-Catalog"
+     type: "udm.Environment"
+     members:
+     - "Infrastructure/AWS/Service-Catalog-EU-WEST-1"
+     children: []
+

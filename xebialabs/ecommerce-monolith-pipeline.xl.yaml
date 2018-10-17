@@ -35,15 +35,15 @@ spec:
       - name: Provision ecommerce product in service catalog
         type: xldeploy.Deploy
         server: XL Deploy
-        deploymentPackage: ecommerce-monolith/ecommerce-sc/2.0
-        deploymentEnvironment: Environments/AWS-Service-Catalog
+        deploymentPackage: ecommerce-monolith/ecommerce-sc/1.0
+        deploymentEnvironment: Environments/AWS-ECOMMERCE/AWS-Service-Catalog
       - name: Update Infra Items
         type: xlrelease.SequentialGroup
         tasks:
         - name: Get OutputVariables
           type: xld.GetCITask
           server: XL Deploy
-          ciID: Infrastructure/aws/Service-Catalog-EU-WEST-1/ecommerce-infra
+          ciID: Infrastructure/AWS/Service-Catalog-EU-WEST-1/ecommerce-infra
           accept: "json"
           variableMapping:
              pythonScript.response: "${outputs}"
@@ -56,25 +56,25 @@ spec:
         - name: Update CLuster name on ECS cluster
           type: xld.UpdateCIProperty
           server: XL Deploy
-          ciID: Infrastructure/aws/ecommerceMonolithCluster
+          ciID: Infrastructure/AWS/ecommerceMonolithCluster
           ciProperty: clusterName
           propertyValue: "${ECSClusterName}"
         - name: Update CLuster region on ECS cluster
           type: xld.UpdateCIProperty
           server: XL Deploy
-          ciID: Infrastructure/aws/ecommerceMonolithCluster
+          ciID: Infrastructure/AWS/ecommerceMonolithCluster
           ciProperty: region
           propertyValue: "eu-west-1"
         - name: Update CLuster ARN on ECS cluster
           type: xld.UpdateCIProperty
           server: XL Deploy
-          ciID: Infrastructure/aws/ecommerceMonolithCluster
+          ciID: Infrastructure/AWS/ecommerceMonolithCluster
           ciProperty: clusterArn
           propertyValue: "${ECSClusterArn}"
         - name: Update ECS Dictionary
           type: xld.UpdateCIProperty
           server: XL Deploy
-          ciID: Environments/ECS Dictionary
+          ciID: Environments/AWS-ECOMMERCE/ECS Dictionary
           ciProperty: entries
           propertyValue: |
                 {"ECS_EXECUTION_ROLE":"${ECSExecutionRoleArn}","region":"eu-west-1"}
@@ -85,7 +85,7 @@ spec:
         type: xldeploy.Deploy
         server: XL Deploy
         deploymentPackage: ecommerce-monolith/ecommerce-app-service/v1.0
-        deploymentEnvironment: Environments/ECS
+        deploymentEnvironment: Environments/AWS-ECOMMERCE/ECS
     - name: Test
       type: xlrelease.Phase
       tasks:
@@ -95,11 +95,11 @@ spec:
       - name: Undeploy store app
         type: xldeploy.Undeploy
         server: XL Deploy
-        deployedApplication: Environments/ECS/ecommerce-app-service
+        deployedApplication: Environments/AWS-ECOMMERCE/ECS/ecommerce-app-service
     - name: Deprovision Infrastracture
       type: xlrelease.Phase
       tasks:
       - name: ecommerece product in service catalog
         type: xldeploy.Undeploy
         server: XL Deploy
-        deployedApplication: Environments/AWS-Service-Catalog/ecommerce-sc
+        deployedApplication: Environments/AWS-ECOMMERCE/AWS-Service-Catalog/ecommerce-sc
