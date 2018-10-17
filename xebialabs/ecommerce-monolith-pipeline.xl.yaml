@@ -35,7 +35,7 @@ spec:
       - name: Provision ecommerce product in service catalog
         type: xldeploy.Deploy
         server: XL Deploy
-        deploymentPackage: ecommerce-monolith/ecommerce-sc/2.0
+        deploymentPackage: ecommerce-monolith/ecommerce-sc/1.0
         deploymentEnvironment: Environments/AWS-Service-Catalog
       - name: Update Infra Items
         type: xlrelease.SequentialGroup
