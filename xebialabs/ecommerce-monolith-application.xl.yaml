@@ -48,7 +48,7 @@ spec:
           - name: ecommerce-monolith-app
             containerName: ecommerce-monolith-app
             type: aws.ecs.ContainerDefinitionSpec
-            image: xebialabsunsupported/ecommerce-monolith
+            image: xebialabsunsupported/ecommerce-monolith:latest-fargate
             cpu: 1024
             softMemoryLimit: 768
             portMappings:
