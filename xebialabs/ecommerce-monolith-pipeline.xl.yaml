@@ -27,6 +27,10 @@ spec:
       type: "xlrelease.StringVariable"
       requiresValue: "false"
       showOnReleaseStart: "false"
+    - key: "LoadBalancerDNSName"
+      type: "xlrelease.StringVariable"
+      requiresValue: "false"
+      showOnReleaseStart: "false"
     phases:
     - name: Provision Infrastructure
       color: '#ff9e3b'
@@ -89,6 +93,27 @@ spec:
     - name: Test
       type: xlrelease.Phase
       tasks:
+      - name: "Check e-commerce application status"
+        type: "xlrelease.ScriptTask"
+        script: |
+            import urllib2
+            import json
+            import time
+
+            time.sleep(60)
+            health_url = 'http://${LoadBalancerDNSName}/management/health'
+            def make_req(url):
+                req = urllib2.Request(url)
+
+                opener = urllib2.build_opener()
+                response = opener.open(req)
+                return json.loads(response.read())
+            resp = make_req(health_url)
+            if resp['status'] == 'UP':
+                print 'Application is in good health'
+            else:
+                print 'Application is not in good health'
+                exit(1)
     - name: Undeploy Application
       type: xlrelease.Phase
       tasks:
