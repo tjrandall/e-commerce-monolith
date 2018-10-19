@@ -187,5 +187,8 @@ Go to XL Deploy and deploy the infrastructure followed by the service
 1. Apply the following files from this repo:
     * `xebialabs/ecommerce-monolith-pipeline.xl.yaml`
     * `xebialabs/ecommerce-monolith-application.xl.yaml`
-1. In XL Deploy, set the access key ID and secret acces key for the Infrastructure/AWS object
+1. In XL Deploy, set the access key ID and secret acces key for the *Infrastructure/AWS* CI
+1. Run "Check connection" on the *Infrastructure/AWS* CI
 1. Create and start a release from the *e-commerce* template in the folder called *E-COMMERCE*
+    * Sometimes the "Undeploy e-commerce application" task will get stuck. In that case, log in to the ECS console,
+    select the ECS cluster *ecommerceMonolithCluster*, go to the *Tasks* section and stop the task that are still running.

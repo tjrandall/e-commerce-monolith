@@ -1,4 +1,17 @@
 apiVersion: xl-release/v1beta1
+kind: Configurations
+spec:
+- name: Fortify on Demand Server
+  type: fortifyOnDemand.Server
+  url: http://fortify.example.com
+- name: BlackDuck Server
+  type: blackduck.Server
+  url: http://blackduck.example.com
+- name: Sonar Server
+  type: sonar.Server
+  url: http://sonar.example.com
+---
+apiVersion: xl-release/v1beta1
 kind: Templates
 spec:
 - name: E-COMMERCE
@@ -36,7 +49,7 @@ spec:
       color: '#ff9e3b'
       type: xlrelease.Phase
       tasks:
-      - name: Provision ecommerce product in service catalog
+      - name: Provision e-commerce product in service catalog
         type: xldeploy.Deploy
         server: XL Deploy
         deploymentPackage: ecommerce-monolith/ecommerce-sc/1.0
@@ -90,11 +103,31 @@ spec:
         server: XL Deploy
         deploymentPackage: ecommerce-monolith/ecommerce-app-service/1.0
         deploymentEnvironment: Environments/AWS-ECOMMERCE/ECS
-    - name: Test
+    - name: Quality tests
       type: xlrelease.Phase
       tasks:
-      - name: "Check e-commerce application status"
-        type: "xlrelease.ScriptTask"
+      - name: Check code quality
+        type: sonar.checkCompliance
+        sonarServer: Sonar Server
+        resource: e-commerce
+        precondition: 'False'
+      - name: Check security compliance
+        type: fortifyOnDemand.checkCompliance
+        fortifyOnDemandServer: Fortify on Demand Server
+        projectName: e-commerce
+        projectVersion: '1.0'
+        precondition: 'False'
+      - name: Check open source software compliance
+        type: blackduck.checkCompliance
+        blackduckServer: BlackDuck Server
+        projectName: e-commerce
+        versionName: '1.0'
+        precondition: 'False'
+    - name: Functional tests
+      type: xlrelease.Phase
+      tasks:
+      - name: Run automated functional test
+        type: xlrelease.ScriptTask
         script: |
             import urllib2
             import json
@@ -114,17 +147,23 @@ spec:
             else:
                 print 'Application is not in good health'
                 exit(1)
-    - name: Undeploy Application
+      - name: Verify application manually
+        type: xlrelease.Task
+        description: |
+          1. Open the following link in a new browser tab: http://${LoadBalancerDNSName}/
+          2. Verify that the application looks good:
+              * Title says "Welcome to XebiaLabs E-Commerce demo application!"
+              * XebiaLabs DevOps Platform diagram displays correctly
+              * Can log in with username "user" and password "user"
+        owner: admin
+    - name: Tear down
       type: xlrelease.Phase
       tasks:
-      - name: Undeploy store app
+      - name: Undeploy e-commerce application (XL Deploy)
         type: xldeploy.Undeploy
         server: XL Deploy
         deployedApplication: Environments/AWS-ECOMMERCE/ECS/ecommerce-app-service
-    - name: Deprovision Infrastracture
-      type: xlrelease.Phase
-      tasks:
-      - name: ecommerece product in service catalog
+      - name: Deprovision e-commerce product (Service Catalog)
         type: xldeploy.Undeploy
         server: XL Deploy
         deployedApplication: Environments/AWS-ECOMMERCE/AWS-Service-Catalog/ecommerce-sc
